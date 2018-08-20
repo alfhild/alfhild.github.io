@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>main - index</title>
+    <link href="./index.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+
+    <h1>main</h1>
+    <p>
+        origin: <strong><span id="origin">unknown yet</span></strong>
+    </p>
+
+    <form id="thirdparty-form" name="thirdparty-form" method="get">
+      <label>thirdparty URL: <input id="thirdparty-url" name="thirdparty-url" type="text"/></label>
+      <input type="submit" value="update">
+    </form>
+
+    <div id="iframe-main">
+      <iframe id="thirdparty-iframe" src=""></iframe>
+    </div>
+    <!-- http://sub.thirdparty-domain-001.au:3005/thirdparty/ -->
+
+    <script src="./index.js"></script>
+
+  </body>
+</html>
