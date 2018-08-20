@@ -14,7 +14,7 @@ function loadThirdPartyFromQueryParam(opts) {
 }
 
 function updateElWithOrigin(selector) {
-  updateDomElementText(document.querySelector(selector), document.origin);
+  updateDomElementText(document.querySelector(selector), window.origin);
 }
 
 function updateDomElementText(element, text) {
