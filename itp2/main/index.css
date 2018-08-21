@@ -2,7 +2,7 @@ body { font-size: 16px; line-height: 1.3; font-family: -apple-system, BlinkMacSy
 input[type=text] { width: 30em; }
 iframe {
   width: 100%;
-  min-height: 25em; /* ugly but simple with no thirdparty JS on main */
+  min-height: 28em; /* ugly but simple with no thirdparty JS on main */
   margin-top: 1em;
   border: 2px dashed rgba(0,0,0,0.2);
   border-radius: 0.25em;
