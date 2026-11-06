@@ -22,16 +22,17 @@
       --fg: light-dark(#4f3829, #d4be98);
       --muted: light-dark(#665c54, #a89984);
       --link: light-dark(#266b79, #7daea3);
+      --marker: light-dark(#c35e0a, #e78a4e);
     }
     :root[data-theme="light"] { color-scheme: light; }
     :root[data-theme="dark"] { color-scheme: dark; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-      line-height: 1.5;
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      line-height: 1.6;
 
       box-sizing: border-box;
-      width: 34em;
+      width: 40em;
       max-width: 100%;
       margin: 5em auto;
       padding: 0 2em;
@@ -44,10 +45,40 @@
     }
     li {
       margin-bottom: .5em;
+      padding-left: 2ch;
     }
     .lead {
-      color: var(--muted);
       margin-top: -.5em;
+    }
+
+    /* Terminal flavour: markdown-style markers. They are decorative, hence the
+       empty alt text. */
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 1em;
+      margin-top: 2em;
+    }
+    h1::before,
+    h2::before {
+      color: var(--marker);
+    }
+    h1::before {
+      content: "#\00a0" / "";
+    }
+    h2::before {
+      content: "##\00a0" / "";
+    }
+    ul {
+      padding-left: 0;
+      list-style: none;
+    }
+    li::before {
+      content: "-" / "";
+      display: inline-block;
+      width: 2ch;
+      margin-left: -2ch;
     }
 
     /* Buttons are added by the script below. */
