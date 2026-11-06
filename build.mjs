@@ -36,8 +36,11 @@ function* walk(dir, rel = "", skip = /^\./) {
   }
 }
 
+const INCLUDE = /^([ \t]*)(?:\/\*|<!--) include: ([\w.-]+) (?:\*\/|-->)[ \t]*\n/gm;
+const COMMENT = /\/\*|<!--/;
+
 function expand(text, file, usedPartials) {
-  return text.replace(/^([ \t]*)\{\{> ([\w.-]+)\}\}\n/gm, (_, indent, name) => {
+  return text.replace(INCLUDE, (_, indent, name) => {
     const source = path.join(PARTIALS, name);
     if (!fs.existsSync(source)) throw new Error(`${file}: no partial named ${name}`);
     const body = fs.readFileSync(source, "utf8");
@@ -77,7 +80,8 @@ export function build() {
 
     for (const rel of walk(SRC, "", /^[._]/)) {
       const text = render(expand(fs.readFileSync(path.join(SRC, rel), "utf8"), rel, usedPartials), data, rel, used);
-      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
+      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: an unresolved placeholder is left in the output`);
+      if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output (a mistyped or misplaced include?)`);
       fs.writeFileSync(place(rel, "src"), text);
     }
     for (const rel of walk(PUBLIC)) {
