@@ -107,6 +107,10 @@
     @keyframes fade {
       from { color: var(--marker); }
     }
+    @keyframes hint-fade {
+      from { visibility: visible; color: var(--marker); }
+      to { opacity: 0; }
+    }
     .hint {
       margin-left: .5em;
       font-size: .8em;
@@ -120,6 +124,9 @@
     .hint.done {
       visibility: visible;
       color: var(--marker);
+    }
+    .hint.fade {
+      animation: hint-fade .3s;
     }
     @media (hover: hover) {
       li:hover .hint,
@@ -248,8 +255,7 @@
       let timer;
 
       function reset() {
-        hint.textContent = "copy";
-        hint.classList.remove("done");
+        hint.classList.replace("done", "fade");
         button.classList.replace("done", "fade");
       }
 
@@ -261,6 +267,7 @@
           ok = false;
         }
         hint.textContent = ok ? "copied" : "failed";
+        hint.classList.remove("fade");
         hint.classList.add("done");
         button.classList.remove("fade");
         button.classList.toggle("done", ok);
@@ -270,6 +277,9 @@
 
       button.addEventListener("click", copy);
       hint.addEventListener("click", copy);
+      hint.addEventListener("animationend", () => {
+        hint.textContent = "copy";
+      });
       original.replaceWith(button, hint);
     }
 
