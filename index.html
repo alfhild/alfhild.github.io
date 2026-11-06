@@ -12,10 +12,6 @@
   <meta property="og:description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23282828'/%3E%3Ctext%20x='16'%20y='23'%20font-family='sans-serif'%20font-size='20'%20font-weight='bold'%20text-anchor='middle'%20fill='%23ebdbb2'%3EA%3C/text%3E%3C/svg%3E">
   <style>
-    /* Gruvbox Material as light-dark(light, dark), medium backgrounds. Light
-       uses the stronger fg1 text, and a muted gray and link blue picked to
-       stay at or above 5:1. Follows the system setting unless the toggle
-       below sets data-theme on <html>. */
     :root {
       color-scheme: light dark;
       --bg: light-dark(#fbf1c7, #282828);
@@ -23,7 +19,6 @@
       --muted: light-dark(#665c54, #a89984);
       --link: light-dark(#266b79, #7daea3);
       --marker: light-dark(#c35e0a, #e78a4e);
-      /* Space above and below the page: 5em on wide screens, shrinking to 2.5em on phones. */
       --gap: clamp(2.5em, 10vw, 5em);
     }
     :root[data-theme="light"] { color-scheme: light; }
@@ -52,8 +47,6 @@
       margin-top: -.5em;
     }
 
-    /* Terminal flavour: markdown-style markers. They are decorative, hence the
-       empty alt text. */
     h1 {
       font-size: 1.5em;
     }
@@ -76,7 +69,6 @@
       list-style: "- ";
     }
 
-    /* Buttons are added by the script below. */
     button {
       padding: 0;
       border: 0;
@@ -114,9 +106,6 @@
         visibility: visible;
       }
     }
-    /* Top-right of the page, 1em from the top and from the right edge of the
-       content column (or of the screen when that is narrower). Faded until
-       hovered or focused. */
     .theme {
       position: absolute;
       top: 1em;
@@ -207,8 +196,6 @@
   </ul>
 
   <script>
-    // Progressive enhancement: make each .copyable value a click-to-copy
-    // button, with a "copy" hint next to it (shown on hover or focus).
     for (const value of document.querySelectorAll(".copyable")) {
       const text = value.textContent;
       const button = document.createElement("button");
@@ -227,21 +214,17 @@
         }
         setTimeout(() => { hint.textContent = "copy"; }, 1500);
       };
-      // The hint is a mouse convenience; keyboard users have the button.
       button.addEventListener("click", copy);
       hint.addEventListener("click", copy);
       value.replaceWith(button, hint);
     }
 
-    // Theme toggle: flips between light and dark, starting from the system
-    // setting. Not persisted; a reload goes back to following the system.
     const root = document.documentElement;
     const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
     const toggle = document.createElement("button");
     toggle.type = "button";
     toggle.className = "theme";
     const isDark = () => (root.dataset.theme || (systemDark.matches ? "dark" : "light")) === "dark";
-    // Shows the icon of the mode a click switches to: sun while dark, moon while light.
     const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
     const moon = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
     const label = () => {
