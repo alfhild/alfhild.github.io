@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node dev.mjs",
+    "validate": "./validate.sh"
+  },
+  "devDependencies": {
+    "vnu-jar": "26.11.4"
+  }
+}
