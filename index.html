@@ -147,6 +147,10 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
+    .theme[data-next="light"] .moon,
+    .theme[data-next="dark"] .sun {
+      display: none;
+    }
   </style>
   <script type="application/ld+json">
     {
@@ -213,6 +217,16 @@
     <li>VAT no: <span class="copyable">SE556978670901</span></li>
   </ul>
 
+  <button type="button" class="theme" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <g class="sun">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+      </g>
+      <path class="moon" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+    </svg>
+  </button>
+
   <script>
     function makeCopyable(original) {
       const text = original.textContent;
@@ -256,25 +270,15 @@
     function addThemeToggle() {
       const root = document.documentElement;
       const system = matchMedia("(prefers-color-scheme: dark)");
-      const toggle = Object.assign(document.createElement("button"), {
-        type: "button",
-        className: "theme",
-      });
-      const icons = {
-        light: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-        dark: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
-      };
+      const toggle = document.querySelector(".theme");
 
       const isDark = () => (root.dataset.theme ?? (system.matches ? "dark" : "light")) === "dark";
 
       function render() {
         const next = isDark() ? "light" : "dark";
         const text = `Switch to ${next} theme`;
-        Object.assign(toggle, {
-          ariaLabel: text,
-          title: text,
-          innerHTML: `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[next]}</svg>`,
-        });
+        toggle.dataset.next = next;
+        Object.assign(toggle, { ariaLabel: text, title: text });
       }
 
       toggle.addEventListener("click", () => {
@@ -283,7 +287,7 @@
       });
       system.addEventListener("change", render);
       render();
-      document.body.append(toggle);
+      toggle.hidden = false;
     }
 
     document.querySelectorAll(".copyable").forEach(makeCopyable);
