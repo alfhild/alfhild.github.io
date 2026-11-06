@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Not found | Alfhild Consulting AB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#fbf1c7, #282828);
+      --fg: light-dark(#4f3829, #d4be98);
+      --link: light-dark(#266b79, #7daea3);
+      --marker: light-dark(#c35e0a, #e78a4e);
+      --gap: clamp(2em, 6.4vw, 5em);
+    }
+
+    body {
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      font-size: .975rem;
+      word-spacing: -.1em;
+      line-height: 1.6;
+
+      box-sizing: border-box;
+      width: 40em;
+      max-width: 100%;
+      margin: var(--gap) auto;
+      padding: 0 1em;
+
+      color: var(--fg);
+      background: var(--bg);
+    }
+    a {
+      color: var(--link);
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    h1::before {
+      content: "#\00a0" / "";
+      color: var(--marker);
+    }
+  </style>
+</head>
+<body>
+  <h1>Not found</h1>
+  <p>There is nothing at this address.</p>
+  <p><a href="/">Back to alfhild.io</a></p>
+</body>
+</html>

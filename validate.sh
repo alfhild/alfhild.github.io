@@ -5,7 +5,7 @@
 set -eu
 cd "$(dirname "$0")"
 
-npx --yes vnu-jar --also-check-css index.html
+npx --yes vnu-jar --also-check-css index.html 404.html
 npx --yes vnu-jar --svg favicon.svg
 
 vcf=uliedberg_alfhild.vcf
