@@ -36,7 +36,7 @@ function* walk(dir, rel = "", skip = /^\./) {
   }
 }
 
-const INCLUDE = /^([ \t]*)(?:\/\*|<!--) include: ([\w.-]+) (?:\*\/|-->)[ \t]*\n/gm;
+const INCLUDE = /^([ \t]*)(?:\/\*|<!--)# include "([\w.-]+)" (?:\*\/|-->)[ \t]*\n/gm;
 const COMMENT = /\/\*|<!--/;
 
 function expand(text, file, usedPartials) {
