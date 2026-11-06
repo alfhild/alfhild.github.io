@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = path.dirname(fileURLToPath(import.meta.url));
 export const SRC = path.join(root, "src");
 export const PUBLIC = path.join(root, "public");
+export const PARTIALS = path.join(SRC, "_partials");
 export const DIST = path.join(root, "dist");
 const STAGING = path.join(root, "dist.tmp");
 export const DATA = path.join(root, "data.json");
@@ -25,14 +26,28 @@ function loadData() {
   };
 }
 
-function* walk(dir, rel = "") {
+function* walk(dir, rel = "", skip = /^\./) {
   const entries = fs.readdirSync(path.join(dir, rel), { withFileTypes: true });
   for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
-    if (entry.name.startsWith(".")) continue;
+    if (skip.test(entry.name)) continue;
     const entryRel = path.join(rel, entry.name);
-    if (entry.isDirectory()) yield* walk(dir, entryRel);
+    if (entry.isDirectory()) yield* walk(dir, entryRel, skip);
     else yield entryRel;
   }
+}
+
+const INCLUDE = /^([ \t]*)(?:\/\*|<!--)# include "([\w.-]+)" (?:\*\/|-->)[ \t]*\n/gm;
+const COMMENT = /\/\*|<!--/;
+
+function expand(text, file, usedPartials) {
+  return text.replace(INCLUDE, (_, indent, name) => {
+    const source = path.join(PARTIALS, name);
+    if (!fs.existsSync(source)) throw new Error(`${file}: no partial named ${name}`);
+    const body = fs.readFileSync(source, "utf8");
+    if (/\{\{|\}\}/.test(body)) throw new Error(`${path.relative(root, source)}: a partial cannot contain placeholders`);
+    usedPartials.add(name);
+    return body.replace(/^(?=.)/gm, indent) + (body.endsWith("\n") ? "" : "\n");
+  });
 }
 
 function render(text, data, file, used) {
@@ -50,6 +65,7 @@ function render(text, data, file, used) {
 export function build() {
   const data = loadData();
   const used = new Set();
+  const usedPartials = new Set();
   const origin = new Map();
 
   fs.rmSync(STAGING, { recursive: true, force: true });
@@ -62,9 +78,10 @@ export function build() {
       return dest;
     };
 
-    for (const rel of walk(SRC)) {
-      const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
-      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
+    for (const rel of walk(SRC, "", /^[._]/)) {
+      const text = render(expand(fs.readFileSync(path.join(SRC, rel), "utf8"), rel, usedPartials), data, rel, used);
+      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: an unresolved placeholder is left in the output`);
+      if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output (a mistyped or misplaced include?)`);
       fs.writeFileSync(place(rel, "src"), text);
     }
     for (const rel of walk(PUBLIC)) {
@@ -73,6 +90,9 @@ export function build() {
 
     const unused = Object.keys(data).filter((key) => !used.has(key));
     if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
+
+    const idle = fs.existsSync(PARTIALS) ? [...walk(PARTIALS)].filter((name) => !usedPartials.has(name)) : [];
+    if (idle.length) throw new Error(`partials that no page includes: ${idle.join(", ")}`);
 
     const actual = [...walk(STAGING)].sort();
     if (actual.join("\n") !== [...origin.keys()].sort().join("\n")) {
