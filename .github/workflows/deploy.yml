@@ -25,17 +25,10 @@ jobs:
           java-version: 21
       - run: ./validate.sh
 
-  deploy:
+  build:
     if: github.ref == 'refs/heads/main'
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - name: Collect the files to publish
@@ -46,5 +39,17 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
