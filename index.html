@@ -48,6 +48,60 @@
       color: var(--muted);
       margin-top: -.5em;
     }
+
+    /* Buttons are added by the script below. */
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+    button:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 2px;
+    }
+    .copyable:hover {
+      text-decoration: underline dotted;
+    }
+    .hint {
+      margin-left: .5em;
+      font-size: .8em;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .hint:hover {
+      color: var(--link);
+    }
+    @media (hover: hover) {
+      .hint {
+        visibility: hidden;
+      }
+      li:hover .hint,
+      .copyable:focus-visible + .hint {
+        visibility: visible;
+      }
+    }
+    .theme {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+      color: var(--muted);
+    }
+    .theme:hover {
+      color: var(--link);
+    }
+    .theme svg {
+      display: block;
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
   </style>
   <script type="application/ld+json">
     {
@@ -117,5 +171,57 @@
     <li>VAT no: <span class="copyable">SE556978670901</span></li>
   </ul>
 
+  <script>
+    // Progressive enhancement: make each .copyable value a click-to-copy
+    // button, with a "copy" hint next to it (shown on hover or focus).
+    for (const value of document.querySelectorAll(".copyable")) {
+      const text = value.textContent;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copyable";
+      button.textContent = text;
+      const hint = document.createElement("span");
+      hint.className = "hint";
+      hint.textContent = "copy";
+      const copy = async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          hint.textContent = "copied";
+        } catch {
+          hint.textContent = "failed";
+        }
+        setTimeout(() => { hint.textContent = "copy"; }, 1500);
+      };
+      // The hint is a mouse convenience; keyboard users have the button.
+      button.addEventListener("click", copy);
+      hint.addEventListener("click", copy);
+      value.replaceWith(button, hint);
+    }
+
+    // Theme toggle: flips between light and dark, starting from the system
+    // setting. Not persisted; a reload goes back to following the system.
+    const root = document.documentElement;
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "theme";
+    const isDark = () => (root.dataset.theme || (systemDark.matches ? "dark" : "light")) === "dark";
+    // Shows the icon of the mode a click switches to: sun while dark, moon while light.
+    const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+    const moon = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+    const label = () => {
+      const next = isDark() ? "light" : "dark";
+      toggle.setAttribute("aria-label", "Switch to " + next + " theme");
+      toggle.title = "Switch to " + next + " theme";
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (next === "light" ? sun : moon) + "</svg>";
+    };
+    toggle.addEventListener("click", () => {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      label();
+    });
+    systemDark.addEventListener("change", label);
+    label();
+    document.body.append(toggle);
+  </script>
 </body>
 </html>
