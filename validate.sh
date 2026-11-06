@@ -1,9 +1,9 @@
 #!/bin/sh
-# Validate the site: HTML + inline CSS with the W3C Nu validator, plus a
-# basic structural check of the vCard. Requires Java and npx; nothing is
-# installed in the repo.
+# Validate the published site (public/): HTML + inline CSS with the W3C Nu
+# validator, plus a basic structural check of the vCard. Requires Java and
+# npx; nothing is installed in the repo.
 set -eu
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/public"
 
 npx --yes vnu-jar --also-check-css index.html 404.html
 npx --yes vnu-jar --svg favicon.svg
