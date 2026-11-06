@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Alfhild Consulting AB</title>
+  <title>{{legalName}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <meta name="description" content="{{tagline}} {{pitch}}">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.alfhild.io/">
-  <meta property="og:title" content="Alfhild Consulting AB">
-  <meta property="og:description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <meta property="og:url" content="{{url}}/">
+  <meta property="og:title" content="{{legalName}}">
+  <meta property="og:description" content="{{tagline}} {{pitch}}">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
     :root {
@@ -170,39 +170,39 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://www.alfhild.io/#org",
-          "name": "Alfhild Consulting",
-          "legalName": "Alfhild Consulting AB",
-          "url": "https://www.alfhild.io",
-          "taxID": "556978-6709",
-          "vatID": "SE556978670901",
-          "email": "ulf@alfhild.io",
-          "telephone": "+46762482220",
+          "@id": "{{url}}/#org",
+          "name": "{{company}}",
+          "legalName": "{{legalName}}",
+          "url": "{{url}}",
+          "taxID": "{{orgNo}}",
+          "vatID": "{{vatNo}}",
+          "email": "{{email}}",
+          "telephone": "{{phone}}",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "Stockholm",
-            "addressCountry": "SE"
+            "addressLocality": "{{locality}}",
+            "addressCountry": "{{country}}"
           },
-          "sameAs": "https://www.linkedin.com/in/uliedberg",
-          "founder": { "@id": "https://www.alfhild.io/#ulf" }
+          "sameAs": "{{linkedin}}",
+          "founder": { "@id": "{{url}}/#ulf" }
         },
         {
           "@type": "Person",
-          "@id": "https://www.alfhild.io/#ulf",
-          "name": "Ulf Liedberg",
-          "worksFor": { "@id": "https://www.alfhild.io/#org" },
-          "email": "ulf@alfhild.io",
-          "telephone": "+46762482220",
-          "url": "https://www.alfhild.io",
-          "sameAs": "https://www.linkedin.com/in/uliedberg"
+          "@id": "{{url}}/#ulf",
+          "name": "{{givenName}} {{familyName}}",
+          "worksFor": { "@id": "{{url}}/#org" },
+          "email": "{{email}}",
+          "telephone": "{{phone}}",
+          "url": "{{url}}",
+          "sameAs": "{{linkedin}}"
         }
       ]
     }
   </script>
 </head>
 <body>
-  <h1>Alfhild Consulting</h1>
-  <p>Ulf Liedberg, independent software consultant in Stockholm.</p>
+  <h1>{{company}}</h1>
+  <p>{{tagline}}</p>
 
   <p>
     I've worked as a developer for over 20 years. I'm a hands-on back end /
@@ -213,20 +213,20 @@
     Clients have included Kustom, Spotify &amp; Klarna.
   </p>
   <p>
-    More details: <a href="https://www.linkedin.com/in/uliedberg">CV on LinkedIn</a>
+    More details: <a href="{{linkedin}}">CV on LinkedIn</a>
   </p>
 
   <h2>Contact</h2>
   <ul>
-    <li>e: <a href="mailto:ulf@alfhild.io">ulf@alfhild.io</a></li>
-    <li>t: <a href="tel:+46762482220">+46(0)762-482220</a></li>
+    <li>e: <a href="mailto:{{email}}">{{email}}</a></li>
+    <li>t: <a href="tel:{{phone}}">{{phoneDisplay}}</a></li>
     <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
   </ul>
 
   <h2>Company</h2>
   <ul>
-    <li>Org no: <span class="copyable">556978-6709</span></li>
-    <li>VAT no: <span class="copyable">SE556978670901</span></li>
+    <li>Org no: <span class="copyable">{{orgNo}}</span></li>
+    <li>VAT no: <span class="copyable">{{vatNo}}</span></li>
   </ul>
 
   <button type="button" class="theme" hidden>
