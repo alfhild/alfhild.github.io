@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = path.dirname(fileURLToPath(import.meta.url));
 export const SRC = path.join(root, "src");
 export const PUBLIC = path.join(root, "public");
-export const PARTIALS = path.join(root, "partials");
+export const PARTIALS = path.join(SRC, "_partials");
 export const DIST = path.join(root, "dist");
 const STAGING = path.join(root, "dist.tmp");
 export const DATA = path.join(root, "data.json");
@@ -26,12 +26,12 @@ function loadData() {
   };
 }
 
-function* walk(dir, rel = "") {
+function* walk(dir, rel = "", skip = /^\./) {
   const entries = fs.readdirSync(path.join(dir, rel), { withFileTypes: true });
   for (const entry of entries.sort((a, b) => (a.name < b.name ? -1 : 1))) {
-    if (entry.name.startsWith(".")) continue;
+    if (skip.test(entry.name)) continue;
     const entryRel = path.join(rel, entry.name);
-    if (entry.isDirectory()) yield* walk(dir, entryRel);
+    if (entry.isDirectory()) yield* walk(dir, entryRel, skip);
     else yield entryRel;
   }
 }
@@ -41,7 +41,7 @@ function expand(text, file, usedPartials) {
     const source = path.join(PARTIALS, name);
     if (!fs.existsSync(source)) throw new Error(`${file}: no partial named ${name}`);
     const body = fs.readFileSync(source, "utf8");
-    if (/\{\{|\}\}/.test(body)) throw new Error(`partials/${name}: a partial cannot contain placeholders`);
+    if (/\{\{|\}\}/.test(body)) throw new Error(`${path.relative(root, source)}: a partial cannot contain placeholders`);
     usedPartials.add(name);
     return body.replace(/^(?=.)/gm, indent) + (body.endsWith("\n") ? "" : "\n");
   });
@@ -75,7 +75,7 @@ export function build() {
       return dest;
     };
 
-    for (const rel of walk(SRC)) {
+    for (const rel of walk(SRC, "", /^[._]/)) {
       const text = render(expand(fs.readFileSync(path.join(SRC, rel), "utf8"), rel, usedPartials), data, rel, used);
       if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
       fs.writeFileSync(place(rel, "src"), text);
