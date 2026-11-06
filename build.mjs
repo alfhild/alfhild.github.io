@@ -4,8 +4,8 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const SRC = path.join(root, "src");
+const PUBLIC = path.join(root, "public");
 const DIST = path.join(root, "dist");
-const MARK = ".tmpl.";
 
 function loadData() {
   const data = JSON.parse(fs.readFileSync(path.join(root, "data.json"), "utf8"));
@@ -44,29 +44,32 @@ function render(text, data, file, used) {
 function build() {
   const data = loadData();
   const used = new Set();
-  const expected = [];
+  const origin = new Map();
 
   fs.rmSync(DIST, { recursive: true, force: true });
-  for (const rel of walk(SRC)) {
-    const isTemplate = path.basename(rel).includes(MARK);
-    const out = isTemplate ? rel.replace(MARK, ".") : rel;
-    const dest = path.join(DIST, out);
+
+  const place = (rel, from) => {
+    if (origin.has(rel)) throw new Error(`${rel} exists in both ${origin.get(rel)}/ and ${from}/`);
+    origin.set(rel, from);
+    const dest = path.join(DIST, rel);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
-    if (isTemplate) {
-      const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
-      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
-      fs.writeFileSync(dest, text);
-    } else {
-      fs.copyFileSync(path.join(SRC, rel), dest);
-    }
-    expected.push(out);
+    return dest;
+  };
+
+  for (const rel of walk(SRC)) {
+    const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
+    if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
+    fs.writeFileSync(place(rel, "src"), text);
+  }
+  for (const rel of walk(PUBLIC)) {
+    fs.copyFileSync(path.join(PUBLIC, rel), place(rel, "public"));
   }
 
   const unused = Object.keys(data).filter((key) => !used.has(key));
   if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
 
   const actual = [...walk(DIST)].sort();
-  if (actual.join("\n") !== expected.sort().join("\n")) {
+  if (actual.join("\n") !== [...origin.keys()].sort().join("\n")) {
     throw new Error(`dist/ does not hold exactly the expected files:\n${actual.join("\n")}`);
   }
   console.log(`built ${actual.length} files into dist/: ${actual.join(", ")}`);
@@ -93,6 +96,7 @@ if (watch) {
     }, 100);
   };
   fs.watch(SRC, { recursive: true }, rebuild);
+  fs.watch(PUBLIC, { recursive: true }, rebuild);
   fs.watch(path.join(root, "data.json"), rebuild);
-  console.log("watching src/ and data.json; Ctrl-C to stop");
+  console.log("watching src/, public/ and data.json; Ctrl-C to stop");
 }
