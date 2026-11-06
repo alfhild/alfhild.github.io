@@ -42,17 +42,8 @@
     a {
       color: var(--link);
     }
-    li a {
-      padding-block: .4em;
-    }
     p {
       text-wrap: pretty;
-    }
-    li {
-      margin-bottom: .5em;
-    }
-    h1 + p {
-      margin-top: -.5em;
     }
 
     h1 {
@@ -61,9 +52,6 @@
     h2 {
       font-size: 1em;
       margin: 2.5em 0 .5em;
-    }
-    h2 + ul {
-      margin-top: 0;
     }
     h1::before,
     h2::before {
@@ -75,9 +63,22 @@
     h2::before {
       content: "##\00a0" / "";
     }
+    h1 + p {
+      margin-top: -.5em;
+    }
+
     ul {
       padding-left: 2ch;
       list-style: "- ";
+    }
+    h2 + ul {
+      margin-top: 0;
+    }
+    li {
+      margin-bottom: .5em;
+    }
+    li a {
+      padding-block: .4em;
     }
 
     button {
@@ -92,6 +93,7 @@
       outline: 2px solid var(--link);
       outline-offset: 2px;
     }
+
     .copyable {
       text-decoration: underline dotted;
       transition: color .3s;
@@ -100,21 +102,15 @@
       color: var(--marker);
       transition: none;
     }
-    .hint,
-    .theme {
-      color: var(--muted);
-    }
-    .hint:hover,
-    .theme:hover {
-      color: var(--link);
-    }
     .hint {
       margin-left: .5em;
       font-size: .8em;
+      color: var(--muted);
       cursor: pointer;
-    }
-    .hint {
       visibility: hidden;
+    }
+    .hint:hover {
+      color: var(--link);
     }
     .hint.done {
       visibility: visible;
@@ -126,11 +122,16 @@
         visibility: visible;
       }
     }
+
     .theme {
       position: absolute;
       top: 1em;
       right: max(1em, calc(50% - 19em));
+      color: var(--muted);
       opacity: .5;
+    }
+    .theme:hover {
+      color: var(--link);
     }
     .theme:hover,
     .theme:focus-visible {
