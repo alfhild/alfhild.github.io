@@ -1,4 +1,0 @@
-exclude:
-  - CNAME
-  - validate.sh
-  - README.md
