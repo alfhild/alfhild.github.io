@@ -1,0 +1,3 @@
+exclude:
+  - validate.sh
+  - README.md
