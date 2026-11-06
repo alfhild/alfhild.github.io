@@ -23,6 +23,8 @@
       --muted: light-dark(#665c54, #a89984);
       --link: light-dark(#266b79, #7daea3);
       --marker: light-dark(#c35e0a, #e78a4e);
+      /* Space above and below the page: 5em on wide screens, shrinking to 2.5em on phones. */
+      --gap: clamp(2.5em, 10vw, 5em);
     }
     :root[data-theme="light"] { color-scheme: light; }
     :root[data-theme="dark"] { color-scheme: dark; }
@@ -34,7 +36,7 @@
       box-sizing: border-box;
       width: 40em;
       max-width: 100%;
-      margin: 5em auto;
+      margin: var(--gap) auto;
       padding: 0 2em;
 
       color: var(--fg);
@@ -112,10 +114,18 @@
         visibility: visible;
       }
     }
+    /* Top-right of the page, 1em from the top and from the right edge of the
+       content column (or of the screen when that is narrower). Faded until
+       hovered or focused. */
     .theme {
-      position: fixed;
+      position: absolute;
       top: 1em;
-      right: 1em;
+      right: max(1em, calc(50% - 19em));
+      opacity: .5;
+    }
+    .theme:hover,
+    .theme:focus-visible {
+      opacity: 1;
     }
     .theme svg {
       display: block;
