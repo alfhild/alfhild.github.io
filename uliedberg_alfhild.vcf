@@ -1,9 +1,13 @@
 BEGIN:VCARD
 VERSION:3.0
-N:Liedberg;Ulf
+N:Liedberg;Ulf;;;
 FN:Ulf Liedberg
 ORG:Alfhild Consulting AB
+TITLE:Independent software consultant
 TEL;TYPE=WORK,VOICE:+46 762 482220
 EMAIL;TYPE=PREF,INTERNET:ulf@alfhild.io
+ADR;TYPE=WORK:;;;Stockholm;;;Sweden
 URL;TYPE=WORK:https://www.alfhild.io
+URL:https://www.linkedin.com/in/uliedberg
+REV:20261106T000000Z
 END:VCARD

@@ -1,57 +1,246 @@
-<!DOCTYPE html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Alfhild Consulting AB</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style type="text/css">
+  <meta name="description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.alfhild.io/">
+  <meta property="og:title" content="Alfhild Consulting AB">
+  <meta property="og:description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23282828'/%3E%3Ctext%20x='16'%20y='23'%20font-family='sans-serif'%20font-size='20'%20font-weight='bold'%20text-anchor='middle'%20fill='%23ebdbb2'%3EA%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#fbf1c7, #282828);
+      --fg: light-dark(#4f3829, #d4be98);
+      --muted: light-dark(#665c54, #a89984);
+      --link: light-dark(#266b79, #7daea3);
+      --marker: light-dark(#c35e0a, #e78a4e);
+      --gap: clamp(2.5em, 10vw, 5em);
+    }
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
+
     body {
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+      line-height: 1.6;
 
       box-sizing: border-box;
-      width: 34em;
+      width: 40em;
       max-width: 100%;
-      margin: 5em auto;
+      margin: var(--gap) auto;
       padding: 0 2em;
 
-      color: #222;
-      background: #fafafa;
+      color: var(--fg);
+      background: var(--bg);
+    }
+    a {
+      color: var(--link);
     }
     li {
       margin-bottom: .5em;
     }
-    .hidden {
-      display: none;
+    h1 + p {
+      margin-top: -.5em;
+    }
+
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 1em;
+      margin-top: 2em;
+    }
+    h1::before,
+    h2::before {
+      color: var(--marker);
+    }
+    h1::before {
+      content: "#\00a0" / "";
+    }
+    h2::before {
+      content: "##\00a0" / "";
+    }
+    ul {
+      padding-left: 2ch;
+      list-style: "- ";
+    }
+
+    button {
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+    button:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 2px;
+    }
+    .copyable:hover {
+      text-decoration: underline dotted;
+    }
+    .hint,
+    .theme {
+      color: var(--muted);
+    }
+    .hint:hover,
+    .theme:hover {
+      color: var(--link);
+    }
+    .hint {
+      margin-left: .5em;
+      font-size: .8em;
+      cursor: pointer;
+    }
+    @media (hover: hover) {
+      .hint {
+        visibility: hidden;
+      }
+      li:hover .hint,
+      .copyable:focus-visible + .hint {
+        visibility: visible;
+      }
+    }
+    .theme {
+      position: absolute;
+      top: 1em;
+      right: max(1em, calc(50% - 19em));
+      opacity: .5;
+    }
+    .theme:hover,
+    .theme:focus-visible {
+      opacity: 1;
+    }
+    .theme svg {
+      display: block;
+      width: 1.4rem;
+      height: 1.4rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
   </style>
   <script type="application/ld+json">
     {
-      "@context": "http://schema.org",
-      "@type": "Person",
-      "name": "Ulf Liedberg",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Alfhild Consulting AB",
-        "taxID": "556978-6709",
-        "vatID": "SE556978670901"
-      },
-      "jobTitle": "Consultant & owner",
-      "email": "ulf@alfhild.io",
-      "telephone": "+46762482220",
-      "url": "https://www.alfhild.io",
-      "sameAs": "https://www.linkedin.com/in/uliedberg"
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.alfhild.io/#org",
+          "name": "Alfhild Consulting",
+          "legalName": "Alfhild Consulting AB",
+          "url": "https://www.alfhild.io",
+          "taxID": "556978-6709",
+          "vatID": "SE556978670901",
+          "email": "ulf@alfhild.io",
+          "telephone": "+46762482220",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Stockholm",
+            "addressCountry": "SE"
+          },
+          "sameAs": "https://www.linkedin.com/in/uliedberg",
+          "founder": { "@id": "https://www.alfhild.io/#ulf" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://www.alfhild.io/#ulf",
+          "name": "Ulf Liedberg",
+          "jobTitle": "Independent software consultant",
+          "worksFor": { "@id": "https://www.alfhild.io/#org" },
+          "email": "ulf@alfhild.io",
+          "telephone": "+46762482220",
+          "url": "https://www.alfhild.io",
+          "sameAs": "https://www.linkedin.com/in/uliedberg"
+        }
+      ]
     }
   </script>
 </head>
 <body>
   <h1>Alfhild Consulting</h1>
-  <p>Please feel free to contact me, Ulf Liedberg:</p>
+  <p>Ulf Liedberg, independent software consultant in Stockholm.</p>
+
+  <p>
+    I've worked as a developer for over 20 years, and as an independent
+    consultant through my own company since 2014. I'm a hands-on back end /
+    full stack developer: a generalist who can specialize quickly, from
+    investigation and proof of concept to polished product.
+  </p>
+  <p>
+    Clients have included Kustom, Spotify &amp; Klarna.
+  </p>
+  <p>
+    More details: <a href="https://www.linkedin.com/in/uliedberg">CV on LinkedIn</a>
+  </p>
+
+  <h2>Contact</h2>
   <ul>
     <li>e: <a href="mailto:ulf@alfhild.io">ulf@alfhild.io</a></li>
     <li>t: <a href="tel:+46762482220">+46(0)762-482220</a></li>
-    <li>CV: <a href="https://www.linkedin.com/in/uliedberg">Linked In</a></li>
-    <li>Contact info via <a href="uliedberg_alfhild.vcf">vcard</a></li>
-    <li>Org no: 556978-6709</li>
-    <li>VAT no: SE556978670901</li>
+    <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
   </ul>
+
+  <h2>Company</h2>
+  <ul>
+    <li>Alfhild Consulting AB</li>
+    <li>Org no: <span class="copyable">556978-6709</span></li>
+    <li>VAT no: <span class="copyable">SE556978670901</span></li>
+  </ul>
+
+  <script>
+    for (const value of document.querySelectorAll(".copyable")) {
+      const text = value.textContent;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "copyable";
+      button.textContent = text;
+      const hint = document.createElement("span");
+      hint.className = "hint";
+      hint.textContent = "copy";
+      const copy = async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+          hint.textContent = "copied";
+        } catch {
+          hint.textContent = "failed";
+        }
+        setTimeout(() => { hint.textContent = "copy"; }, 1500);
+      };
+      button.addEventListener("click", copy);
+      hint.addEventListener("click", copy);
+      value.replaceWith(button, hint);
+    }
+
+    const root = document.documentElement;
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "theme";
+    const isDark = () => (root.dataset.theme || (systemDark.matches ? "dark" : "light")) === "dark";
+    const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+    const moon = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
+    const label = () => {
+      const next = isDark() ? "light" : "dark";
+      const text = "Switch to " + next + " theme";
+      toggle.setAttribute("aria-label", text);
+      toggle.title = text;
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (next === "light" ? sun : moon) + "</svg>";
+    };
+    toggle.addEventListener("click", () => {
+      root.dataset.theme = isDark() ? "light" : "dark";
+      label();
+    });
+    systemDark.addEventListener("change", label);
+    label();
+    document.body.append(toggle);
+  </script>
 </body>
 </html>
