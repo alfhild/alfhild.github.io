@@ -214,61 +214,80 @@
   </ul>
 
   <script>
-    for (const value of document.querySelectorAll(".copyable")) {
-      const text = value.textContent;
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "copyable";
-      button.textContent = text;
-      const hint = document.createElement("span");
-      hint.className = "hint";
-      hint.setAttribute("role", "status");
-      hint.textContent = "copy";
+    function makeCopyable(original) {
+      const text = original.textContent;
+      const button = Object.assign(document.createElement("button"), {
+        type: "button",
+        className: "copyable",
+        textContent: text,
+      });
+      const hint = Object.assign(document.createElement("span"), {
+        className: "hint",
+        role: "status",
+        textContent: "copy",
+      });
       let timer;
-      const copy = async () => {
+
+      function reset() {
+        hint.textContent = "copy";
+        hint.classList.remove("done");
+        button.classList.remove("done");
+      }
+
+      async function copy() {
         let ok = true;
         try {
           await navigator.clipboard.writeText(text);
         } catch {
           ok = false;
         }
-        clearTimeout(timer);
         hint.textContent = ok ? "copied" : "failed";
         hint.classList.add("done");
         button.classList.toggle("done", ok);
-        timer = setTimeout(() => {
-          hint.textContent = "copy";
-          hint.classList.remove("done");
-          button.classList.remove("done");
-        }, 1000);
-      };
+        clearTimeout(timer);
+        timer = setTimeout(reset, 1000);
+      }
+
       button.addEventListener("click", copy);
       hint.addEventListener("click", copy);
-      value.replaceWith(button, hint);
+      original.replaceWith(button, hint);
     }
 
-    const root = document.documentElement;
-    const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "theme";
-    const isDark = () => (root.dataset.theme || (systemDark.matches ? "dark" : "light")) === "dark";
-    const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
-    const moon = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
-    const label = () => {
-      const next = isDark() ? "light" : "dark";
-      const text = "Switch to " + next + " theme";
-      toggle.setAttribute("aria-label", text);
-      toggle.title = text;
-      toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (next === "light" ? sun : moon) + "</svg>";
-    };
-    toggle.addEventListener("click", () => {
-      root.dataset.theme = isDark() ? "light" : "dark";
-      label();
-    });
-    systemDark.addEventListener("change", label);
-    label();
-    document.body.append(toggle);
+    function addThemeToggle() {
+      const root = document.documentElement;
+      const system = matchMedia("(prefers-color-scheme: dark)");
+      const toggle = Object.assign(document.createElement("button"), {
+        type: "button",
+        className: "theme",
+      });
+      const icons = {
+        light: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+        dark: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+      };
+
+      const isDark = () => (root.dataset.theme ?? (system.matches ? "dark" : "light")) === "dark";
+
+      function render() {
+        const next = isDark() ? "light" : "dark";
+        const text = `Switch to ${next} theme`;
+        Object.assign(toggle, {
+          ariaLabel: text,
+          title: text,
+          innerHTML: `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[next]}</svg>`,
+        });
+      }
+
+      toggle.addEventListener("click", () => {
+        root.dataset.theme = isDark() ? "light" : "dark";
+        render();
+      });
+      system.addEventListener("change", render);
+      render();
+      document.body.append(toggle);
+    }
+
+    document.querySelectorAll(".copyable").forEach(makeCopyable);
+    addThemeToggle();
   </script>
 </body>
 </html>
