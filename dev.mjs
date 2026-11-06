@@ -57,7 +57,9 @@ const schedule = () => {
   timer = setTimeout(rebuild, 100);
 };
 for (const dir of [SRC, PUBLIC]) fs.watch(dir, { recursive: true }, schedule);
-fs.watch(DATA, schedule);
+fs.watch(path.dirname(DATA), (_, name) => {
+  if (!name || name === path.basename(DATA)) schedule();
+});
 
 const server = http.createServer(respond);
 server.on("error", (error) => {
