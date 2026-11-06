@@ -96,11 +96,15 @@
 
     .copyable {
       text-decoration: underline dotted;
-      transition: color .3s;
     }
     .copyable.done {
       color: var(--marker);
-      transition: none;
+    }
+    .copyable.fade {
+      animation: fade .3s;
+    }
+    @keyframes fade {
+      from { color: var(--marker); }
     }
     .hint {
       margin-left: .5em;
@@ -245,7 +249,7 @@
       function reset() {
         hint.textContent = "copy";
         hint.classList.remove("done");
-        button.classList.remove("done");
+        button.classList.replace("done", "fade");
       }
 
       async function copy() {
@@ -257,6 +261,7 @@
         }
         hint.textContent = ok ? "copied" : "failed";
         hint.classList.add("done");
+        button.classList.remove("fade");
         button.classList.toggle("done", ok);
         clearTimeout(timer);
         timer = setTimeout(reset, 1000);
