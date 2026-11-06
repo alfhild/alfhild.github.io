@@ -5,8 +5,8 @@
 set -eu
 cd "$(dirname "$0")/public"
 
-npx --yes vnu-jar --also-check-css index.html 404.html
-npx --yes vnu-jar --svg favicon.svg
+npx --yes vnu-jar@26.11.4 --also-check-css index.html 404.html
+npx --yes vnu-jar@26.11.4 --svg favicon.svg
 
 vcf=uliedberg_alfhild.vcf
 [ "$(head -n 1 "$vcf" | tr -d '\r')" = "BEGIN:VCARD" ] || { echo "$vcf: must start with BEGIN:VCARD" >&2; exit 1; }
