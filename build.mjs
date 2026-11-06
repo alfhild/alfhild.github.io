@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = path.dirname(fileURLToPath(import.meta.url));
 export const SRC = path.join(root, "src");
 export const PUBLIC = path.join(root, "public");
+export const PARTIALS = path.join(root, "partials");
 export const DIST = path.join(root, "dist");
 const STAGING = path.join(root, "dist.tmp");
 export const DATA = path.join(root, "data.json");
@@ -35,6 +36,17 @@ function* walk(dir, rel = "") {
   }
 }
 
+function expand(text, file, usedPartials) {
+  return text.replace(/^([ \t]*)\{\{> ([\w.-]+)\}\}\n/gm, (_, indent, name) => {
+    const source = path.join(PARTIALS, name);
+    if (!fs.existsSync(source)) throw new Error(`${file}: no partial named ${name}`);
+    const body = fs.readFileSync(source, "utf8");
+    if (/\{\{|\}\}/.test(body)) throw new Error(`partials/${name}: a partial cannot contain placeholders`);
+    usedPartials.add(name);
+    return body.replace(/^(?=.)/gm, indent) + (body.endsWith("\n") ? "" : "\n");
+  });
+}
+
 function render(text, data, file, used) {
   const vcard = file.endsWith(".vcf");
   return text.replace(/\{\{(\w+)\}\}/g, (_, key) => {
@@ -50,6 +62,7 @@ function render(text, data, file, used) {
 export function build() {
   const data = loadData();
   const used = new Set();
+  const usedPartials = new Set();
   const origin = new Map();
 
   fs.rmSync(STAGING, { recursive: true, force: true });
@@ -63,7 +76,7 @@ export function build() {
     };
 
     for (const rel of walk(SRC)) {
-      const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
+      const text = render(expand(fs.readFileSync(path.join(SRC, rel), "utf8"), rel, usedPartials), data, rel, used);
       if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
       fs.writeFileSync(place(rel, "src"), text);
     }
@@ -73,6 +86,9 @@ export function build() {
 
     const unused = Object.keys(data).filter((key) => !used.has(key));
     if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
+
+    const idle = fs.existsSync(PARTIALS) ? [...walk(PARTIALS)].filter((name) => !usedPartials.has(name)) : [];
+    if (idle.length) throw new Error(`partials that no page includes: ${idle.join(", ")}`);
 
     const actual = [...walk(STAGING)].sort();
     if (actual.join("\n") !== [...origin.keys()].sort().join("\n")) {

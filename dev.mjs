@@ -2,7 +2,7 @@ import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { build, DATA, DIST, PUBLIC, SRC } from "./build.mjs";
+import { build, DATA, DIST, PARTIALS, PUBLIC, SRC } from "./build.mjs";
 
 const port = Number(process.env.PORT ?? 8000);
 const host = process.env.HOST ?? "127.0.0.1";
@@ -56,7 +56,7 @@ const schedule = () => {
   clearTimeout(timer);
   timer = setTimeout(rebuild, 100);
 };
-for (const dir of [SRC, PUBLIC]) fs.watch(dir, { recursive: true }, schedule);
+for (const dir of [SRC, PUBLIC, PARTIALS]) fs.watch(dir, { recursive: true }, schedule);
 fs.watch(path.dirname(DATA), (_, name) => {
   if (!name || name === path.basename(DATA)) schedule();
 });
