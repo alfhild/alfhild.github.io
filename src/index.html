@@ -17,25 +17,13 @@
       text-wrap: pretty;
     }
 
-    h1 {
-      font-size: 1.5em;
-    }
     h2 {
       font-size: 1em;
       margin: 2.5em 0 .5em;
     }
-    h1::before,
-    h2::before {
-      color: var(--marker);
-    }
-    h1::before {
-      content: "#\00a0" / "";
-    }
     h2::before {
       content: "##\00a0" / "";
-    }
-    h1 + p {
-      margin-top: -.5em;
+      color: var(--marker);
     }
 
     ul {
@@ -105,6 +93,8 @@
       }
     }
 
+    :root[data-theme="light"] { color-scheme: light; }
+    :root[data-theme="dark"] { color-scheme: dark; }
     .theme {
       position: absolute;
       top: 1em;
