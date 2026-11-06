@@ -1,1 +1,1 @@
-*.vcf text eol=crlf
+*.vcf -text
