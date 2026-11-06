@@ -12,37 +12,7 @@
   <meta property="og:description" content="{{tagline}} {{pitch}}">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
-    :root {
-      color-scheme: light dark;
-      --bg: light-dark(#fbf1c7, #282828);
-      --fg: light-dark(#4f3829, #d4be98);
-      --muted: light-dark(#665c54, #a89984);
-      --link: light-dark(#266b79, #7daea3);
-      --marker: light-dark(#c35e0a, #e78a4e);
-      --width: 40em;
-      --gap: clamp(2em, 6.4vw, 5em);
-    }
-    :root[data-theme="light"] { color-scheme: light; }
-    :root[data-theme="dark"] { color-scheme: dark; }
-
-    body {
-      font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace;
-      font-size: .975rem;
-      word-spacing: -.1em;
-      line-height: 1.6;
-
-      box-sizing: border-box;
-      width: var(--width);
-      max-width: 100%;
-      margin: var(--gap) auto;
-      padding: 0 1em;
-
-      color: var(--fg);
-      background: var(--bg);
-    }
-    a {
-      color: var(--link);
-    }
+    /*# include "base.css" */
     p {
       text-wrap: pretty;
     }
