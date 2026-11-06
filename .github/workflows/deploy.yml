@@ -26,12 +26,13 @@ jobs:
           java-version: 21
       - run: npm ci
       - run: ./validate.sh
-      - if: github.event_name == 'pull_request'
+      - if: ${{ !cancelled() && github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v7
         with:
           name: site-preview
           path: dist
           retention-days: 7
+          if-no-files-found: ignore
 
   build:
     if: github.ref == 'refs/heads/main'
