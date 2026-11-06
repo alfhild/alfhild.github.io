@@ -2,9 +2,12 @@
 
 Source for https://www.alfhild.io.
 
-- `public/` is the website. The deploy workflow publishes it exactly as it is, so anything in there is public and nothing outside it is.
-- `./validate.sh` checks the HTML, CSS, SVG and vCard (needs Java and npx).
-- Pushes to `main` are validated and deployed by `.github/workflows/deploy.yml`.
+- `src/` is the site. Files named `*.tmpl.*` (the home page, the 404 page and the vCard) have their `{{placeholders}}` filled in from `data.json`; every other file is copied as it is.
+- `data.json` holds the contact details once. Change them there and not in the templates.
+- `npm run build` writes the result to `dist/` (git-ignored). `dist/` is exactly what gets published, so anything in there is public and nothing outside it is. `npm run dev` rebuilds on every change.
+- `./validate.sh` builds and then checks `dist/`: HTML, inline CSS, SVG, vCard and robots.txt. It needs Node 22 or newer and Java.
+- Pull requests upload the generated `dist/` as a `site-preview` artifact, so the shipped bytes can be inspected even though they are not in the diff.
+- Pushes to `main` are validated, built and deployed by `.github/workflows/deploy.yml`.
 
 ## If a deploy fails
 
