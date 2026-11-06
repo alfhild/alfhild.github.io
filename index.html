@@ -45,9 +45,8 @@
     }
     li {
       margin-bottom: .5em;
-      padding-left: 2ch;
     }
-    .lead {
+    h1 + p {
       margin-top: -.5em;
     }
 
@@ -71,14 +70,8 @@
       content: "##\00a0" / "";
     }
     ul {
-      padding-left: 0;
-      list-style: none;
-    }
-    li::before {
-      content: "-" / "";
-      display: inline-block;
-      width: 2ch;
-      margin-left: -2ch;
+      padding-left: 2ch;
+      list-style: "- ";
     }
 
     /* Buttons are added by the script below. */
@@ -97,14 +90,18 @@
     .copyable:hover {
       text-decoration: underline dotted;
     }
+    .hint,
+    .theme {
+      color: var(--muted);
+    }
+    .hint:hover,
+    .theme:hover {
+      color: var(--link);
+    }
     .hint {
       margin-left: .5em;
       font-size: .8em;
-      color: var(--muted);
       cursor: pointer;
-    }
-    .hint:hover {
-      color: var(--link);
     }
     @media (hover: hover) {
       .hint {
@@ -119,10 +116,6 @@
       position: fixed;
       top: 1em;
       right: 1em;
-      color: var(--muted);
-    }
-    .theme:hover {
-      color: var(--link);
     }
     .theme svg {
       display: block;
@@ -174,7 +167,7 @@
 </head>
 <body>
   <h1>Alfhild Consulting</h1>
-  <p class="lead">Ulf Liedberg, independent software consultant in Stockholm.</p>
+  <p>Ulf Liedberg, independent software consultant in Stockholm.</p>
 
   <p>
     I've worked as a developer for over 20 years, and as an independent
@@ -243,8 +236,9 @@
     const moon = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>';
     const label = () => {
       const next = isDark() ? "light" : "dark";
-      toggle.setAttribute("aria-label", "Switch to " + next + " theme");
-      toggle.title = "Switch to " + next + " theme";
+      const text = "Switch to " + next + " theme";
+      toggle.setAttribute("aria-label", text);
+      toggle.title = text;
       toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">' + (next === "light" ? sun : moon) + "</svg>";
     };
     toggle.addEventListener("click", () => {
