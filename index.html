@@ -32,13 +32,19 @@
       width: 40em;
       max-width: 100%;
       margin: var(--gap) auto;
-      padding: 0 2em;
+      padding: 0 1em;
 
       color: var(--fg);
       background: var(--bg);
     }
     a {
       color: var(--link);
+    }
+    li a {
+      padding-block: .4em;
+    }
+    p {
+      text-wrap: pretty;
     }
     li {
       margin-bottom: .5em;
@@ -52,7 +58,10 @@
     }
     h2 {
       font-size: 1em;
-      margin-top: 2em;
+      margin: 2.5em 0 .5em;
+    }
+    h2 + ul {
+      margin-top: 0;
     }
     h1::before,
     h2::before {
