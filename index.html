@@ -90,8 +90,13 @@
       outline: 2px solid var(--link);
       outline-offset: 2px;
     }
-    .copyable:hover {
+    .copyable {
       text-decoration: underline dotted;
+      transition: color .3s;
+    }
+    .copyable.done {
+      color: var(--marker);
+      transition: none;
     }
     .hint,
     .theme {
@@ -106,10 +111,14 @@
       font-size: .8em;
       cursor: pointer;
     }
+    .hint {
+      visibility: hidden;
+    }
+    .hint.done {
+      visibility: visible;
+      color: var(--marker);
+    }
     @media (hover: hover) {
-      .hint {
-        visibility: hidden;
-      }
       li:hover .hint,
       .copyable:focus-visible + .hint {
         visibility: visible;
@@ -211,15 +220,25 @@
       button.textContent = text;
       const hint = document.createElement("span");
       hint.className = "hint";
+      hint.setAttribute("role", "status");
       hint.textContent = "copy";
+      let timer;
       const copy = async () => {
+        let ok = true;
         try {
           await navigator.clipboard.writeText(text);
-          hint.textContent = "copied";
         } catch {
-          hint.textContent = "failed";
+          ok = false;
         }
-        setTimeout(() => { hint.textContent = "copy"; }, 1500);
+        clearTimeout(timer);
+        hint.textContent = ok ? "copied" : "failed";
+        hint.classList.add("done");
+        button.classList.toggle("done", ok);
+        timer = setTimeout(() => {
+          hint.textContent = "copy";
+          hint.classList.remove("done");
+          button.classList.remove("done");
+        }, 1000);
       };
       button.addEventListener("click", copy);
       hint.addEventListener("click", copy);
