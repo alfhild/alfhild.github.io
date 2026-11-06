@@ -1,12 +1,17 @@
 #!/bin/sh
-# Validate the published site (public/): HTML + inline CSS with the W3C Nu
-# validator, plus a basic structural check of the vCard. Requires Java and
-# npx; nothing is installed in the repo.
+# Build the site and validate what is published (dist/): HTML + inline CSS
+# with the W3C Nu validator, plus basic checks of the vCard and robots.txt.
+# Requires Node and Java.
 set -eu
-cd "$(dirname "$0")/public"
+cd "$(dirname "$0")"
+root=$(pwd)
 
-npx --yes vnu-jar@26.11.4 --also-check-css index.html 404.html
-npx --yes vnu-jar@26.11.4 --svg favicon.svg
+[ -d node_modules ] || npm ci --silent
+node build.mjs
+cd dist
+
+"$root/node_modules/.bin/vnu" --also-check-css index.html 404.html
+"$root/node_modules/.bin/vnu" --svg favicon.svg
 
 vcf=uliedberg_alfhild.vcf
 [ "$(head -n 1 "$vcf" | tr -d '\r')" = "BEGIN:VCARD" ] || { echo "$vcf: must start with BEGIN:VCARD" >&2; exit 1; }
