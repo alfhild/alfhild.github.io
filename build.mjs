@@ -36,8 +36,12 @@ function* walk(dir, rel = "") {
 }
 
 function render(text, data, file, used) {
+  const vcard = file.endsWith(".vcf");
   return text.replace(/\{\{(\w+)\}\}/g, (_, key) => {
     if (!(key in data)) throw new Error(`${file}: no data for {{${key}}}`);
+    if (vcard && /[,;]/.test(data[key])) {
+      throw new Error(`${file}: the value of {{${key}}} contains a comma or semicolon, which a vCard would need escaped`);
+    }
     used.add(key);
     return data[key];
   });
