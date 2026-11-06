@@ -6,7 +6,7 @@
   },
   "scripts": {
     "build": "node build.mjs",
-    "dev": "node build.mjs --watch",
+    "dev": "node dev.mjs",
     "validate": "./validate.sh"
   },
   "devDependencies": {

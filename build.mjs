@@ -3,12 +3,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const SRC = path.join(root, "src");
-const PUBLIC = path.join(root, "public");
-const DIST = path.join(root, "dist");
+export const SRC = path.join(root, "src");
+export const PUBLIC = path.join(root, "public");
+export const DIST = path.join(root, "dist");
+const STAGING = path.join(root, "dist.tmp");
+export const DATA = path.join(root, "data.json");
 
 function loadData() {
-  const data = JSON.parse(fs.readFileSync(path.join(root, "data.json"), "utf8"));
+  const data = JSON.parse(fs.readFileSync(DATA, "utf8"));
   for (const [key, value] of Object.entries(data)) {
     if (typeof value !== "string" || /[<>&"\\\r\n]/.test(value)) {
       throw new Error(`data.json: "${key}" must be a plain string without < > & " \\ or line breaks`);
@@ -41,62 +43,51 @@ function render(text, data, file, used) {
   });
 }
 
-function build() {
+export function build() {
   const data = loadData();
   const used = new Set();
   const origin = new Map();
 
-  fs.rmSync(DIST, { recursive: true, force: true });
+  fs.rmSync(STAGING, { recursive: true, force: true });
+  try {
+    const place = (rel, from) => {
+      if (origin.has(rel)) throw new Error(`${rel} exists in both ${origin.get(rel)}/ and ${from}/`);
+      origin.set(rel, from);
+      const dest = path.join(STAGING, rel);
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      return dest;
+    };
 
-  const place = (rel, from) => {
-    if (origin.has(rel)) throw new Error(`${rel} exists in both ${origin.get(rel)}/ and ${from}/`);
-    origin.set(rel, from);
-    const dest = path.join(DIST, rel);
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    return dest;
-  };
+    for (const rel of walk(SRC)) {
+      const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
+      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
+      fs.writeFileSync(place(rel, "src"), text);
+    }
+    for (const rel of walk(PUBLIC)) {
+      fs.copyFileSync(path.join(PUBLIC, rel), place(rel, "public"));
+    }
 
-  for (const rel of walk(SRC)) {
-    const text = render(fs.readFileSync(path.join(SRC, rel), "utf8"), data, rel, used);
-    if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: unresolved placeholder left in the output`);
-    fs.writeFileSync(place(rel, "src"), text);
+    const unused = Object.keys(data).filter((key) => !used.has(key));
+    if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
+
+    const actual = [...walk(STAGING)].sort();
+    if (actual.join("\n") !== [...origin.keys()].sort().join("\n")) {
+      throw new Error(`the build does not hold exactly the expected files:\n${actual.join("\n")}`);
+    }
+
+    fs.rmSync(DIST, { recursive: true, force: true });
+    fs.renameSync(STAGING, DIST);
+    console.log(`built ${actual.length} files into dist/: ${actual.join(", ")}`);
+  } finally {
+    fs.rmSync(STAGING, { recursive: true, force: true });
   }
-  for (const rel of walk(PUBLIC)) {
-    fs.copyFileSync(path.join(PUBLIC, rel), place(rel, "public"));
-  }
-
-  const unused = Object.keys(data).filter((key) => !used.has(key));
-  if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
-
-  const actual = [...walk(DIST)].sort();
-  if (actual.join("\n") !== [...origin.keys()].sort().join("\n")) {
-    throw new Error(`dist/ does not hold exactly the expected files:\n${actual.join("\n")}`);
-  }
-  console.log(`built ${actual.length} files into dist/: ${actual.join(", ")}`);
 }
 
-const watch = process.argv.includes("--watch");
-try {
-  build();
-} catch (error) {
-  console.error(error.message);
-  if (!watch) process.exit(1);
-}
-
-if (watch) {
-  let timer;
-  const rebuild = () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      try {
-        build();
-      } catch (error) {
-        console.error(error.message);
-      }
-    }, 100);
-  };
-  fs.watch(SRC, { recursive: true }, rebuild);
-  fs.watch(PUBLIC, { recursive: true }, rebuild);
-  fs.watch(path.join(root, "data.json"), rebuild);
-  console.log("watching src/, public/ and data.json; Ctrl-C to stop");
+if (path.resolve(process.argv[1] ?? "") === fileURLToPath(import.meta.url)) {
+  try {
+    build();
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
 }

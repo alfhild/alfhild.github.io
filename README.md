@@ -5,7 +5,8 @@ Source for https://www.alfhild.io.
 - `src/` holds the pages that take data: the home page, the 404 page and the vCard. The build fills their `{{placeholders}}` from `data.json`, and fails if one has no data or a key in `data.json` is unused.
 - `public/` holds files that are copied untouched (`favicon.svg`, `robots.txt`, `hidden/`). Anything that must never be altered goes here.
 - `data.json` holds the contact details once. Change them there and not in the pages.
-- `npm run build` writes the result to `dist/` (git-ignored). `dist/` is exactly what gets published, so anything in there is public and nothing outside it is. `npm run dev` rebuilds on every change.
+- `npm run build` writes the result to `dist/` (git-ignored). `dist/` is exactly what gets published, so anything in there is public and nothing outside it is. A failed build leaves the previous `dist/` in place.
+- `npm run dev` rebuilds on every change and serves `dist/` at http://localhost:8000 (`PORT=8001 npm run dev` for another port). Unknown paths get the 404 page, like Pages. `HOST=0.0.0.0 npm run dev` also serves it on your network, for trying it on a phone; copying to the clipboard needs a secure context, so it only works on localhost and on the real site.
 - `./validate.sh` builds and then checks `dist/`: HTML, inline CSS, SVG, vCard and robots.txt. It needs Node 22 or newer and Java.
 - Pull requests upload the generated `dist/` as a `site-preview` artifact, so the shipped bytes can be inspected even though they are not in the diff.
 - Pushes to `main` are validated, built and deployed by `.github/workflows/deploy.yml`.
