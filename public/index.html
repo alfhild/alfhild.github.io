@@ -19,6 +19,7 @@
       --muted: light-dark(#665c54, #a89984);
       --link: light-dark(#266b79, #7daea3);
       --marker: light-dark(#c35e0a, #e78a4e);
+      --width: 40em;
       --gap: clamp(2em, 6.4vw, 5em);
     }
     :root[data-theme="light"] { color-scheme: light; }
@@ -31,7 +32,7 @@
       line-height: 1.6;
 
       box-sizing: border-box;
-      width: 40em;
+      width: var(--width);
       max-width: 100%;
       margin: var(--gap) auto;
       padding: 0 1em;
@@ -130,7 +131,7 @@
     .theme {
       position: absolute;
       top: 1em;
-      right: max(1em, calc(50% - 19em));
+      right: max(1em, calc(50% - var(--width) / 2 + 1em));
       color: var(--muted);
       opacity: .5;
     }
