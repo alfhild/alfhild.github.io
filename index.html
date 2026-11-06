@@ -1,11 +1,19 @@
-<!DOCTYPE html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Alfhild Consulting AB</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style type="text/css">
+  <meta name="description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.alfhild.io/">
+  <meta property="og:title" content="Alfhild Consulting AB">
+  <meta property="og:description" content="Ulf Liedberg, independent software consultant in Stockholm. Hands-on back end / full stack developer.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%23282828'/%3E%3Ctext%20x='16'%20y='23'%20font-family='sans-serif'%20font-size='20'%20font-weight='bold'%20text-anchor='middle'%20fill='%23ebdbb2'%3EA%3C/text%3E%3C/svg%3E">
+  <style>
     body {
-      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      line-height: 1.5;
 
       box-sizing: border-box;
       width: 34em;
@@ -19,39 +27,78 @@
     li {
       margin-bottom: .5em;
     }
-    .hidden {
-      display: none;
+    .lead {
+      color: #555;
+      margin-top: -.5em;
     }
   </style>
   <script type="application/ld+json">
     {
-      "@context": "http://schema.org",
-      "@type": "Person",
-      "name": "Ulf Liedberg",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "Alfhild Consulting AB",
-        "taxID": "556978-6709",
-        "vatID": "SE556978670901"
-      },
-      "jobTitle": "Consultant & owner",
-      "email": "ulf@alfhild.io",
-      "telephone": "+46762482220",
-      "url": "https://www.alfhild.io",
-      "sameAs": "https://www.linkedin.com/in/uliedberg"
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.alfhild.io/#org",
+          "name": "Alfhild Consulting",
+          "legalName": "Alfhild Consulting AB",
+          "url": "https://www.alfhild.io",
+          "taxID": "556978-6709",
+          "vatID": "SE556978670901",
+          "email": "ulf@alfhild.io",
+          "telephone": "+46762482220",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Stockholm",
+            "addressCountry": "SE"
+          },
+          "sameAs": "https://www.linkedin.com/in/uliedberg",
+          "founder": { "@id": "https://www.alfhild.io/#ulf" }
+        },
+        {
+          "@type": "Person",
+          "@id": "https://www.alfhild.io/#ulf",
+          "name": "Ulf Liedberg",
+          "jobTitle": "Independent software consultant",
+          "worksFor": { "@id": "https://www.alfhild.io/#org" },
+          "email": "ulf@alfhild.io",
+          "telephone": "+46762482220",
+          "url": "https://www.alfhild.io",
+          "sameAs": "https://www.linkedin.com/in/uliedberg"
+        }
+      ]
     }
   </script>
 </head>
 <body>
   <h1>Alfhild Consulting</h1>
-  <p>Please feel free to contact me, Ulf Liedberg:</p>
+  <p class="lead">Ulf Liedberg, independent software consultant in Stockholm.</p>
+
+  <p>
+    I've worked as a developer for over 20 years, and as an independent
+    consultant through my own company since 2014. I'm a hands-on back end /
+    full stack developer: a generalist who can specialize quickly, from
+    investigation and proof of concept to polished product.
+  </p>
+  <p>
+    Clients have included Kustom, Spotify &amp; Klarna.
+  </p>
+  <p>
+    More details: <a href="https://www.linkedin.com/in/uliedberg">CV on LinkedIn</a>
+  </p>
+
+  <h2>Contact</h2>
   <ul>
     <li>e: <a href="mailto:ulf@alfhild.io">ulf@alfhild.io</a></li>
     <li>t: <a href="tel:+46762482220">+46(0)762-482220</a></li>
-    <li>CV: <a href="https://www.linkedin.com/in/uliedberg">Linked In</a></li>
-    <li>Contact info via <a href="uliedberg_alfhild.vcf">vcard</a></li>
-    <li>Org no: 556978-6709</li>
-    <li>VAT no: SE556978670901</li>
+    <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
   </ul>
+
+  <h2>Company</h2>
+  <ul>
+    <li>Alfhild Consulting AB</li>
+    <li>Org no: <span class="copyable">556978-6709</span></li>
+    <li>VAT no: <span class="copyable">SE556978670901</span></li>
+  </ul>
+
 </body>
 </html>
