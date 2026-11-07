@@ -11,12 +11,20 @@ export const DIST = path.join(root, "dist");
 export const DATA = path.join(root, "data.json");
 const PHONE = /^\+46(\d{3})(\d{6})$/;
 
+const KEY = /^[a-z][a-z0-9_]*$/;
+
 function leaves(value, at = "") {
-  if (typeof value === "string") return [[at, value]];
+  if (typeof value === "string" && at) return [[at, value]];
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`data.json: "${at}" must be a string or an object of them`);
+    throw new Error(at ? `data.json: "${at}" must be a string or a group of them` : "data.json: must hold a group of values");
   }
-  return Object.entries(value).flatMap(([key, child]) => leaves(child, at ? `${at}.${key}` : key));
+  const entries = Object.entries(value);
+  if (!entries.length) throw new Error(at ? `data.json: "${at}" is an empty group` : "data.json: is empty");
+  return entries.flatMap(([key, child]) => {
+    const path = at ? `${at}.${key}` : key;
+    if (!KEY.test(key)) throw new Error(`data.json: "${path}" must be snake_case: lowercase letters, digits and _`);
+    return leaves(child, path);
+  });
 }
 
 function loadData() {
@@ -51,13 +59,20 @@ const liquid = new Liquid({
   strictFilters: true,
   greedy: false,
 });
-liquid.registerFilter("phone_display", (phone) => phone.replace(PHONE, "+46(0)$1-$2"));
-liquid.registerFilter("phone_vcard", (phone) => phone.replace(PHONE, "+46 $1 $2"));
+const formatPhone = (format) => (value) => {
+  if (!PHONE.test(value)) throw new Error(`the phone filters need a number like +46762482220, not "${value}"`);
+  return value.replace(PHONE, format);
+};
+liquid.registerFilter("phone_display", formatPhone("+46(0)$1-$2"));
+liquid.registerFilter("phone_vcard", formatPhone("+46 $1 $2"));
 
 function render(rel, { data, values }, used) {
   const template = liquid.parseFileSync(rel);
   for (const at of liquid.globalFullVariablesSync(template)) {
-    if (!values.has(at)) throw new Error(`${rel}: {{ ${at} }} is not a value in data.json`);
+    if (!values.has(at)) {
+      const group = [...values.keys()].some((key) => key.startsWith(`${at}.`));
+      throw new Error(`${rel}: {{ ${at} }} ${group ? "is a group: print one of its values" : "is not a value in data.json"}`);
+    }
     if (rel.endsWith(".vcf") && /[,;]/.test(values.get(at))) {
       throw new Error(`${rel}: the value of {{ ${at} }} contains a comma or semicolon, which a vCard would need escaped`);
     }
