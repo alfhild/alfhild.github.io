@@ -9,21 +9,26 @@ export const PUBLIC = path.join(root, "public");
 export const PARTIALS = path.join(SRC, "_partials");
 export const DIST = path.join(root, "dist");
 export const DATA = path.join(root, "data.json");
+const PHONE = /^\+46(\d{3})(\d{6})$/;
+
+function leaves(value, at = "") {
+  if (typeof value === "string") return [[at, value]];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`data.json: "${at}" must be a string or an object of them`);
+  }
+  return Object.entries(value).flatMap(([key, child]) => leaves(child, at ? `${at}.${key}` : key));
+}
 
 function loadData() {
   const data = JSON.parse(fs.readFileSync(DATA, "utf8"));
-  for (const [key, value] of Object.entries(data)) {
-    if (typeof value !== "string" || /[<>&"\\\r\n]/.test(value)) {
-      throw new Error(`data.json: "${key}" must be a plain string without < > & " \\ or line breaks`);
+  const values = new Map(leaves(data));
+  for (const [at, value] of values) {
+    if (/[<>&"\\\r\n]/.test(value)) {
+      throw new Error(`data.json: "${at}" must be a plain string without < > & " \\ or line breaks`);
     }
   }
-  const phone = /^\+46(\d{3})(\d{6})$/.exec(data.phone);
-  if (!phone) throw new Error('data.json: "phone" must look like +46762482220');
-  return {
-    ...data,
-    phoneDisplay: `+46(0)${phone[1]}-${phone[2]}`,
-    phoneVcard: `+46 ${phone[1]} ${phone[2]}`,
-  };
+  if (!PHONE.test(data.contact?.phone)) throw new Error('data.json: "contact.phone" must look like +46762482220');
+  return { data, values };
 }
 
 function* walk(dir, rel = "", skip = /^\./) {
@@ -46,14 +51,17 @@ const liquid = new Liquid({
   strictFilters: true,
   greedy: false,
 });
+liquid.registerFilter("phone_display", (phone) => phone.replace(PHONE, "+46(0)$1-$2"));
+liquid.registerFilter("phone_vcard", (phone) => phone.replace(PHONE, "+46 $1 $2"));
 
-function render(rel, data, used) {
+function render(rel, { data, values }, used) {
   const template = liquid.parseFileSync(rel);
-  for (const key of liquid.globalVariablesSync(template)) {
-    if (rel.endsWith(".vcf") && /[,;]/.test(data[key] ?? "")) {
-      throw new Error(`${rel}: the value of {{ ${key} }} contains a comma or semicolon, which a vCard would need escaped`);
+  for (const at of liquid.globalFullVariablesSync(template)) {
+    if (!values.has(at)) throw new Error(`${rel}: {{ ${at} }} is not a value in data.json`);
+    if (rel.endsWith(".vcf") && /[,;]/.test(values.get(at))) {
+      throw new Error(`${rel}: the value of {{ ${at} }} contains a comma or semicolon, which a vCard would need escaped`);
     }
-    used.add(key);
+    used.add(at);
   }
   try {
     return liquid.renderSync(template, data);
@@ -63,7 +71,7 @@ function render(rel, data, used) {
 }
 
 export function build() {
-  const data = loadData();
+  const site = loadData();
   const used = new Set();
   const files = new Map();
   const origin = new Map();
@@ -74,7 +82,7 @@ export function build() {
   };
 
   for (const rel of walk(SRC, "", /^[._]/)) {
-    const text = render(rel, data, used);
+    const text = render(rel, site, used);
     if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output`);
     add(rel, "src", (dest) => fs.writeFileSync(dest, text));
   }
@@ -82,7 +90,7 @@ export function build() {
     add(rel, "public", (dest) => fs.copyFileSync(path.join(PUBLIC, rel), dest));
   }
 
-  const unused = Object.keys(data).filter((key) => !used.has(key));
+  const unused = [...site.values.keys()].filter((at) => !used.has(at));
   if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
 
   fs.rmSync(DIST, { recursive: true, force: true });
