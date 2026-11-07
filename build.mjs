@@ -9,21 +9,34 @@ export const PUBLIC = path.join(root, "public");
 export const PARTIALS = path.join(SRC, "_partials");
 export const DIST = path.join(root, "dist");
 export const DATA = path.join(root, "data.json");
+const PHONE = /^\+46(\d{3})(\d{6})$/;
+
+const KEY = /^[a-z][a-z0-9_]*$/;
+
+function leaves(value, at = "") {
+  if (typeof value === "string" && at) return [[at, value]];
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(at ? `data.json: "${at}" must be a string or a group of them` : "data.json: must hold a group of values");
+  }
+  const entries = Object.entries(value);
+  if (!entries.length) throw new Error(at ? `data.json: "${at}" is an empty group` : "data.json: is empty");
+  return entries.flatMap(([key, child]) => {
+    const path = at ? `${at}.${key}` : key;
+    if (!KEY.test(key)) throw new Error(`data.json: "${path}" must be snake_case: lowercase letters, digits and _`);
+    return leaves(child, path);
+  });
+}
 
 function loadData() {
   const data = JSON.parse(fs.readFileSync(DATA, "utf8"));
-  for (const [key, value] of Object.entries(data)) {
-    if (typeof value !== "string" || /[<>&"\\\r\n]/.test(value)) {
-      throw new Error(`data.json: "${key}" must be a plain string without < > & " \\ or line breaks`);
+  const values = new Map(leaves(data));
+  for (const [at, value] of values) {
+    if (/[<>&"\\\r\n]/.test(value)) {
+      throw new Error(`data.json: "${at}" must be a plain string without < > & " \\ or line breaks`);
     }
   }
-  const phone = /^\+46(\d{3})(\d{6})$/.exec(data.phone);
-  if (!phone) throw new Error('data.json: "phone" must look like +46762482220');
-  return {
-    ...data,
-    phoneDisplay: `+46(0)${phone[1]}-${phone[2]}`,
-    phoneVcard: `+46 ${phone[1]} ${phone[2]}`,
-  };
+  if (!PHONE.test(data.contact?.phone)) throw new Error('data.json: "contact.phone" must look like +46762482220');
+  return { data, values };
 }
 
 function* walk(dir, rel = "", skip = /^\./) {
@@ -46,14 +59,24 @@ const liquid = new Liquid({
   strictFilters: true,
   greedy: false,
 });
+const formatPhone = (format) => (value) => {
+  if (!PHONE.test(value)) throw new Error(`the phone filters need a number like +46762482220, not "${value}"`);
+  return value.replace(PHONE, format);
+};
+liquid.registerFilter("phone_display", formatPhone("+46(0)$1-$2"));
+liquid.registerFilter("phone_vcard", formatPhone("+46 $1 $2"));
 
-function render(rel, data, used) {
+function render(rel, { data, values }, used) {
   const template = liquid.parseFileSync(rel);
-  for (const key of liquid.globalVariablesSync(template)) {
-    if (rel.endsWith(".vcf") && /[,;]/.test(data[key] ?? "")) {
-      throw new Error(`${rel}: the value of {{ ${key} }} contains a comma or semicolon, which a vCard would need escaped`);
+  for (const at of liquid.globalFullVariablesSync(template)) {
+    if (!values.has(at)) {
+      const group = [...values.keys()].some((key) => key.startsWith(`${at}.`));
+      throw new Error(`${rel}: {{ ${at} }} ${group ? "is a group: print one of its values" : "is not a value in data.json"}`);
     }
-    used.add(key);
+    if (rel.endsWith(".vcf") && /[,;]/.test(values.get(at))) {
+      throw new Error(`${rel}: the value of {{ ${at} }} contains a comma or semicolon, which a vCard would need escaped`);
+    }
+    used.add(at);
   }
   try {
     return liquid.renderSync(template, data);
@@ -63,7 +86,7 @@ function render(rel, data, used) {
 }
 
 export function build() {
-  const data = loadData();
+  const site = loadData();
   const used = new Set();
   const files = new Map();
   const origin = new Map();
@@ -74,7 +97,7 @@ export function build() {
   };
 
   for (const rel of walk(SRC, "", /^[._]/)) {
-    const text = render(rel, data, used);
+    const text = render(rel, site, used);
     if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output`);
     add(rel, "src", (dest) => fs.writeFileSync(dest, text));
   }
@@ -82,7 +105,7 @@ export function build() {
     add(rel, "public", (dest) => fs.copyFileSync(path.join(PUBLIC, rel), dest));
   }
 
-  const unused = Object.keys(data).filter((key) => !used.has(key));
+  const unused = [...site.values.keys()].filter((at) => !used.has(at));
   if (unused.length) throw new Error(`data keys that no template uses: ${unused.join(", ")}`);
 
   fs.rmSync(DIST, { recursive: true, force: true });
