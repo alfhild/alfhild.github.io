@@ -16,7 +16,7 @@ Source for https://www.alfhild.io.
 
 ## Principles
 
-- **The files that ship are easy to read and clean:** hand-formatted, no comments, no placeholders, no generator banners or timestamps. Noise on the development side is fine; in `dist/` it is not. `build.mjs` and `validate.sh` enforce this, so keep them enforcing it.
+- **The files that ship are easy to read and clean:** hand-formatted, no comments, no placeholders, no generator banners or timestamps. Noise on the development side is fine; in `dist/` it is not. The build fails if a comment or an unresolved placeholder is left in a rendered file, and it checks that `dist/` holds exactly the expected files. The rest (formatting, no banners or timestamps) is kept by convention and review, so check it when you change a template.
 - **Everything is inlined:** one HTML file per page, no stylesheet or script files, so pages load instantly. No web fonts: a system monospace stack.
 - **Modern browsers only:** `light-dark()`, `text-wrap` and CSS `content` alt text are fine.
 - **The look is Gruvbox Material (medium),** to match the author's terminal, with `#` and `##` heading markers. Orange is used only on those markers and on the copy flash.
