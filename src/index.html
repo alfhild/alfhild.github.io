@@ -102,10 +102,12 @@
       color: var(--muted);
       opacity: .5;
     }
-    .theme:hover {
-      color: var(--link);
+    @media (hover: hover) {
+      .theme:hover {
+        color: var(--link);
+        opacity: 1;
+      }
     }
-    .theme:hover,
     .theme:focus-visible {
       opacity: 1;
     }
