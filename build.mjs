@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { Liquid } from "liquidjs";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 export const SRC = path.join(root, "src");
@@ -36,30 +37,32 @@ function* walk(dir, rel = "", skip = /^\./) {
   }
 }
 
-const INCLUDE = /^([ \t]*)(?:\/\*|<!--)# include "([\w.-]+)" (?:\*\/|-->)[ \t]*\n/gm;
 const COMMENT = /\/\*|<!--/;
 
-function expand(text, file, usedPartials) {
-  return text.replace(INCLUDE, (_, indent, name) => {
-    const source = path.join(PARTIALS, name);
-    if (!fs.existsSync(source)) throw new Error(`${file}: no partial named ${name}`);
-    const body = fs.readFileSync(source, "utf8");
-    if (/\{\{|\}\}/.test(body)) throw new Error(`${path.relative(root, source)}: a partial cannot contain placeholders`);
-    usedPartials.add(name);
-    return body.replace(/^(?=.)/gm, indent) + (body.endsWith("\n") ? "" : "\n");
-  });
-}
+const liquid = new Liquid({
+  root: PARTIALS,
+  relativeReference: false,
+  strictVariables: true,
+  strictFilters: true,
+  greedy: false,
+});
 
-function render(text, data, file, used) {
-  const vcard = file.endsWith(".vcf");
-  return text.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-    if (!(key in data)) throw new Error(`${file}: no data for {{${key}}}`);
-    if (vcard && /[,;]/.test(data[key])) {
-      throw new Error(`${file}: the value of {{${key}}} contains a comma or semicolon, which a vCard would need escaped`);
+function render(rel, data, used, usedPartials) {
+  const template = liquid.parse(fs.readFileSync(path.join(SRC, rel), "utf8"), rel);
+  for (const node of template) {
+    if (node.name === "render") usedPartials.add(node.file);
+  }
+  for (const key of liquid.globalVariablesSync(template)) {
+    if (rel.endsWith(".vcf") && /[,;]/.test(data[key] ?? "")) {
+      throw new Error(`${rel}: the value of {{ ${key} }} contains a comma or semicolon, which a vCard would need escaped`);
     }
     used.add(key);
-    return data[key];
-  });
+  }
+  try {
+    return liquid.renderSync(template, data);
+  } catch (error) {
+    throw new Error(`${rel}: ${error.message}`);
+  }
 }
 
 export function build() {
@@ -79,9 +82,9 @@ export function build() {
     };
 
     for (const rel of walk(SRC, "", /^[._]/)) {
-      const text = render(expand(fs.readFileSync(path.join(SRC, rel), "utf8"), rel, usedPartials), data, rel, used);
-      if (/\{\{|\}\}/.test(text)) throw new Error(`${rel}: an unresolved placeholder is left in the output`);
-      if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output (a mistyped or misplaced include?)`);
+      const text = render(rel, data, used, usedPartials);
+      if (/\{[{%]|[}%]\}/.test(text)) throw new Error(`${rel}: an unresolved placeholder is left in the output`);
+      if (COMMENT.test(text)) throw new Error(`${rel}: a comment is left in the output`);
       fs.writeFileSync(place(rel, "src"), text);
     }
     for (const rel of walk(PUBLIC)) {

@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{legalName}}</title>
+  <title>{{ legalName }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{{tagline}} {{pitch}}">
+  <meta name="description" content="{{ tagline }} {{ pitch }}">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="{{url}}/">
-  <meta property="og:title" content="{{legalName}}">
-  <meta property="og:description" content="{{tagline}} {{pitch}}">
+  <meta property="og:url" content="{{ url }}/">
+  <meta property="og:title" content="{{ legalName }}">
+  <meta property="og:description" content="{{ tagline }} {{ pitch }}">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <style>
-    /*# include "base.css" */
+{% render "base.css" -%}
     p {
       text-wrap: pretty;
     }
@@ -130,39 +130,39 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "{{url}}/#org",
-          "name": "{{company}}",
-          "legalName": "{{legalName}}",
-          "url": "{{url}}",
-          "taxID": "{{orgNo}}",
-          "vatID": "{{vatNo}}",
-          "email": "{{email}}",
-          "telephone": "{{phone}}",
+          "@id": "{{ url }}/#org",
+          "name": "{{ company }}",
+          "legalName": "{{ legalName }}",
+          "url": "{{ url }}",
+          "taxID": "{{ orgNo }}",
+          "vatID": "{{ vatNo }}",
+          "email": "{{ email }}",
+          "telephone": "{{ phone }}",
           "address": {
             "@type": "PostalAddress",
-            "addressLocality": "{{locality}}",
-            "addressCountry": "{{country}}"
+            "addressLocality": "{{ locality }}",
+            "addressCountry": "{{ country }}"
           },
-          "sameAs": "{{linkedin}}",
-          "founder": { "@id": "{{url}}/#ulf" }
+          "sameAs": "{{ linkedin }}",
+          "founder": { "@id": "{{ url }}/#ulf" }
         },
         {
           "@type": "Person",
-          "@id": "{{url}}/#ulf",
-          "name": "{{givenName}} {{familyName}}",
-          "worksFor": { "@id": "{{url}}/#org" },
-          "email": "{{email}}",
-          "telephone": "{{phone}}",
-          "url": "{{url}}",
-          "sameAs": "{{linkedin}}"
+          "@id": "{{ url }}/#ulf",
+          "name": "{{ givenName }} {{ familyName }}",
+          "worksFor": { "@id": "{{ url }}/#org" },
+          "email": "{{ email }}",
+          "telephone": "{{ phone }}",
+          "url": "{{ url }}",
+          "sameAs": "{{ linkedin }}"
         }
       ]
     }
   </script>
 </head>
 <body>
-  <h1>{{company}}</h1>
-  <p>{{tagline}}</p>
+  <h1>{{ company }}</h1>
+  <p>{{ tagline }}</p>
 
   <p>
     I've worked as a developer for over 20 years. I'm a hands-on back end /
@@ -173,20 +173,20 @@
     Clients have included Kustom, Spotify &amp; Klarna.
   </p>
   <p>
-    More details: <a href="{{linkedin}}">CV on LinkedIn</a>
+    More details: <a href="{{ linkedin }}">CV on LinkedIn</a>
   </p>
 
   <h2>Contact</h2>
   <ul>
-    <li>e: <a href="mailto:{{email}}">{{email}}</a></li>
-    <li>t: <a href="tel:{{phone}}">{{phoneDisplay}}</a></li>
+    <li>e: <a href="mailto:{{ email }}">{{ email }}</a></li>
+    <li>t: <a href="tel:{{ phone }}">{{ phoneDisplay }}</a></li>
     <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
   </ul>
 
   <h2>Company</h2>
   <ul>
-    <li>Org no: <span class="copyable">{{orgNo}}</span></li>
-    <li>VAT no: <span class="copyable">{{vatNo}}</span></li>
+    <li>Org no: <span class="copyable">{{ orgNo }}</span></li>
+    <li>VAT no: <span class="copyable">{{ vatNo }}</span></li>
   </ul>
 
   <button type="button" class="theme" hidden>
