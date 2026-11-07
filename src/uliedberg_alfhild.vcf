@@ -1,12 +1,12 @@
 BEGIN:VCARD
 VERSION:3.0
-N:{{familyName}};{{givenName}};;;
-FN:{{givenName}} {{familyName}}
-ORG:{{legalName}}
-TEL;TYPE=WORK,VOICE:{{phoneVcard}}
-EMAIL;TYPE=PREF,INTERNET:{{email}}
-ADR;TYPE=WORK:;;;{{locality}};;;{{countryName}}
-URL;TYPE=WORK:{{url}}
-URL:{{linkedin}}
-REV:{{vcardRev}}
+N:{{ familyName }};{{ givenName }};;;
+FN:{{ givenName }} {{ familyName }}
+ORG:{{ legalName }}
+TEL;TYPE=WORK,VOICE:{{ phoneVcard }}
+EMAIL;TYPE=PREF,INTERNET:{{ email }}
+ADR;TYPE=WORK:;;;{{ locality }};;;{{ countryName }}
+URL;TYPE=WORK:{{ url }}
+URL:{{ linkedin }}
+REV:{{ vcardRev }}
 END:VCARD

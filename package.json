@@ -10,6 +10,7 @@
     "validate": "./validate.sh"
   },
   "devDependencies": {
+    "liquidjs": "10.30.0",
     "vnu-jar": "26.11.4"
   }
 }
