@@ -163,33 +163,35 @@
   </script>
 </head>
 <body>
-  <h1>{{ company.name }}</h1>
-  <p>{{ copy.tagline }}</p>
+  <main>
+    <h1>{{ company.name }}</h1>
+    <p>{{ copy.tagline }}</p>
 
-  <p>
-    I've worked as a developer for over 20 years. I'm a hands-on back end /
-    full stack developer: a generalist who can specialize quickly, from
-    investigation and proof of concept to polished product.
-  </p>
-  <p>
-    Clients have included Kustom, Spotify &amp; Klarna.
-  </p>
-  <p>
-    More details: <a href="{{ contact.linkedin }}">CV on LinkedIn</a>
-  </p>
+    <p>
+      I've worked as a developer for over 20 years. I'm a hands-on back end /
+      full stack developer: a generalist who can specialize quickly, from
+      investigation and proof of concept to polished product.
+    </p>
+    <p>
+      Clients have included Kustom, Spotify &amp; Klarna.
+    </p>
+    <p>
+      More details: <a href="{{ contact.linkedin }}">CV on LinkedIn</a>
+    </p>
 
-  <h2>Contact</h2>
-  <ul>
-    <li>e: <a href="mailto:{{ contact.email }}">{{ contact.email }}</a></li>
-    <li>t: <a href="tel:{{ contact.phone }}">{{ contact.phone | phone_display }}</a></li>
-    <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
-  </ul>
+    <h2>Contact</h2>
+    <ul>
+      <li>e: <a href="mailto:{{ contact.email }}">{{ contact.email }}</a></li>
+      <li>t: <a href="tel:{{ contact.phone }}">{{ contact.phone | phone_display }}</a></li>
+      <li>Contact info via <a href="uliedberg_alfhild.vcf">vCard</a></li>
+    </ul>
 
-  <h2>Company</h2>
-  <ul>
-    <li>Org no: <span class="copyable">{{ company.org_no }}</span></li>
-    <li>VAT no: <span class="copyable">{{ company.vat_no }}</span></li>
-  </ul>
+    <h2>Company</h2>
+    <ul>
+      <li>Org no: <span class="copyable">{{ company.org_no }}</span></li>
+      <li>VAT no: <span class="copyable">{{ company.vat_no }}</span></li>
+    </ul>
+  </main>
 
   <button type="button" class="theme" hidden>
     <svg viewBox="0 0 24 24" aria-hidden="true">
