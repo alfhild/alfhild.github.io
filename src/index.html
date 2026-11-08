@@ -76,6 +76,9 @@
       cursor: pointer;
       visibility: hidden;
     }
+    .hint:empty::before {
+      content: "copy" / "";
+    }
     .hint:hover {
       color: var(--link);
     }
@@ -214,7 +217,6 @@
       const hint = Object.assign(document.createElement("span"), {
         className: "hint",
         role: "status",
-        textContent: "copy",
       });
       let timer;
 
@@ -242,7 +244,7 @@
       button.addEventListener("click", copy);
       hint.addEventListener("click", copy);
       hint.addEventListener("animationend", () => {
-        hint.textContent = "copy";
+        hint.textContent = "";
       });
       original.replaceWith(button, hint);
     }
